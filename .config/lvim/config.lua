@@ -15,6 +15,18 @@ require('lvim.lsp.manager').setup("tailwindcss", {
 lvim.plugins = {
   { "thoughtbot/vim-rspec" },
   { "tpope/vim-rails" },
+  { 
+    "nvim-telescope/telescope.nvim",
+    config = function()
+      require('telescope').setup({
+        defaults = {
+          layout_config = {
+            vertical = { width = 0.5 }
+          }
+        }
+      })
+    end
+  },
   { "mfussenegger/nvim-dap" },
   {
     "suketa/nvim-dap-ruby",
@@ -39,7 +51,7 @@ lvim.plugins = {
         enable = true,
         enable_rename = true,
         enable_close = true,
-        filetypes = { "html", "xml", "eruby" }
+        filetypes = { "html", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
       })
     end
   },
