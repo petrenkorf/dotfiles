@@ -13,6 +13,60 @@ require('lvim.lsp.manager').setup("tailwindcss", {
 })
 
 lvim.plugins = {
+  -- {
+  --   "williamboman/mason.nvim",
+  --   config = function()
+  --     require("mason").setup()
+  --   end
+  -- },
+  -- { "williamboman/mason-lspconfig.nvim" },
+  -- { "neovim/nvim-lspconfig" },
+  -- --   config = function()
+  -- --     require("mason").setup()
+  -- --     require("mason-lspconfig").setup( {
+  -- --       ensure_installed = { 'cucumber_language_server' }
+  -- --     })
+  -- --     require('lspconfig').cucumber_language_server.setup {}
+  -- --   end
+  -- -- },
+  {
+    'rcarriga/nvim-notify',
+    config = function()
+      lvim.notify = require("notify")
+    end
+  },
+  {
+    "nvim-neotest/neotest",
+    lazy = true,
+    dependencies = {
+      "olimorris/neotest-rspec",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter"
+    },
+    config = function()
+      require('neotest').setup({
+        adapters = {
+          require('neotest-rspec')({
+            root_files = { "Gemfile" },
+            rspec_cmd = function()
+              return vim.tbl_flatten({
+                "bundle",
+                "exec",
+                "rspec"
+              })
+            end
+          })
+        }
+      })
+    end
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    config = function()
+      ensure_installed = { "ruby", "clojure", "golang", "javascript", "typescript" }
+    end
+  },
   { "thoughtbot/vim-rspec" },
   { "tpope/vim-rails" },
   { 
@@ -20,6 +74,7 @@ lvim.plugins = {
     config = function()
       require('telescope').setup({
         defaults = {
+          file_ignore_patterns = {"node_modules"},
           layout_config = {
             vertical = { width = 0.5 }
           }
@@ -60,8 +115,32 @@ lvim.plugins = {
     config = function()
       require('auto-save').setup()
     end
-  }
+  },
+
+-- CLOJURE
+  { "Olical/conjure" },
+  { "guns/vim-sexp" },
+  { "tpope/vim-repeat" },
+  { "tpope/vim-surround" }
 }
+
+require('lvim.lsp.manager').setup("cucumber_language_server", {
+  cmd = { "/home/petris/Code/language-server/bin/cucumber-language-server.cjs", "--stdio" },
+  filetypes = { "cucumber", "feature" },
+  root_dir = require("lspconfig").util.find_git_ancestor,
+  settings = {
+    cucumber = {
+      glue = { "features/step_definitions/*.rb" },
+      features = { "features/*.feature" }
+    }
+  },
+  cucumber = {
+    glue = { "features/step_definitions/*.rb" },
+    features = { "features/*.feature" }
+  },
+  glue = { "features/step_definitions/*.rb" },
+  features = { "features/*.feature" }
+})
 
 -- Open this configfile 
 lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
@@ -69,13 +148,16 @@ lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 -- Bundler install
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
 
+-- neotest-rspec
+lvim.keys.normal_mode["<Leader>t"] = ':lua require("neotest").run.run(vim.fn.expand("%"))<CR>'
+
 -- vim-rspec
 vim.g.rspec_command = "!bundle exec rspec --color {spec}"
 
-lvim.keys.normal_mode["<Leader>t"] = ":call RunCurrentSpecFile()<CR>"
-lvim.keys.normal_mode["<Leader>s"] = ":call RunNearestSpec()<CR>"
-lvim.keys.normal_mode["<Leader>l"] = ":call RunLastSpec()<CR>"
-lvim.keys.normal_mode["<Leader>a"] = ":call RunAllSpecs()<CR>"
+-- lvim.keys.normal_mode["<Leader>t"] = ":call RunCurrentSpecFile()<CR>"
+lvim.keys.normal_mode["<Leader>rs"] = ":call RunNearestSpec()<CR>"
+lvim.keys.normal_mode["<Leader>rl"] = ":call RunLastSpec()<CR>"
+lvim.keys.normal_mode["<Leader>ra"] = ":call RunAllSpecs()<CR>"
 
 -- Split hotkeys
 lvim.keys.normal_mode["<Leader>0"] = "<C-W>v"
