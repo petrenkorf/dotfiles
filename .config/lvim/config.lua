@@ -133,13 +133,7 @@ require('lvim.lsp.manager').setup("cucumber_language_server", {
       glue = { "features/step_definitions/*.rb" },
       features = { "features/*.feature" }
     }
-  },
-  cucumber = {
-    glue = { "features/step_definitions/*.rb" },
-    features = { "features/*.feature" }
-  },
-  glue = { "features/step_definitions/*.rb" },
-  features = { "features/*.feature" }
+  }
 })
 
 -- Open this configfile 
@@ -149,15 +143,12 @@ lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
 
 -- neotest-rspec
-lvim.keys.normal_mode["<Leader>t"] = ':lua require("neotest").run.run(vim.fn.expand("%"))<CR>'
-
--- vim-rspec
-vim.g.rspec_command = "!bundle exec rspec --color {spec}"
-
--- lvim.keys.normal_mode["<Leader>t"] = ":call RunCurrentSpecFile()<CR>"
-lvim.keys.normal_mode["<Leader>rs"] = ":call RunNearestSpec()<CR>"
-lvim.keys.normal_mode["<Leader>rl"] = ":call RunLastSpec()<CR>"
-lvim.keys.normal_mode["<Leader>ra"] = ":call RunAllSpecs()<CR>"
+lvim.keys.normal_mode["<Leader>ta"] = ':lua require("neotest").run.run(vim.fn.expand("%"))<CR>'
+lvim.keys.normal_mode["<Leader>ts"] = ':lua require("neotest").run.run()<CR>'
+lvim.keys.normal_mode["<Leader>tw"] = ':lua require("neotest").watch.toggle(vim.fn.expand("%"))<CR>'
+lvim.keys.normal_mode["<Leader>to"] = ':lua require("neotest").summary.toggle()<CR>'
+lvim.keys.normal_mode["<Leader>tj"] = ':lua require("neotest").jump.next({ status = "failed" })<CR>'
+lvim.keys.normal_mode["<Leader>tp"] = ':lua require("neotest").prev.next({ status = "failed" })<CR>'
 
 -- Split hotkeys
 lvim.keys.normal_mode["<Leader>0"] = "<C-W>v"
