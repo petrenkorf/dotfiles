@@ -3,6 +3,7 @@
 -- Forum: https://www.reddit.com/r/lunarvim/
 -- Discord: https://discord.com/invite/Xb9B4Ny
 
+lvim.colorscheme = 'nord'
 lvim.leader = 'space'
 
 require('lvim.lsp.manager').setup("tailwindcss", {
@@ -33,8 +34,10 @@ lvim.plugins = {
     'rcarriga/nvim-notify',
     config = function()
       lvim.notify = require("notify")
+      lvim.notify("Hello Petris")
     end
   },
+  { 'folke/zen-mode.nvim' },
   {
     "nvim-neotest/neotest",
     lazy = true,
@@ -74,7 +77,7 @@ lvim.plugins = {
     config = function()
       require('telescope').setup({
         defaults = {
-          file_ignore_patterns = {"node_modules"},
+          file_ignore_patterns = {"node_modules", "target", "out"},
           layout_config = {
             vertical = { width = 0.5 }
           }
@@ -106,7 +109,7 @@ lvim.plugins = {
         enable = true,
         enable_rename = true,
         enable_close = true,
-        filetypes = { "html", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
+        filetypes = { "html", "htmldjango", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
       })
     end
   },
@@ -121,11 +124,12 @@ lvim.plugins = {
   { "Olical/conjure" },
   { "guns/vim-sexp" },
   { "tpope/vim-repeat" },
-  { "tpope/vim-surround" }
+  { "tpope/vim-surround" },
+  { "shaunsingh/nord.nvim"}
 }
 
 require('lvim.lsp.manager').setup("cucumber_language_server", {
-  cmd = { "/home/petris/Code/language-server/bin/cucumber-language-server.cjs", "--stdio" },
+  cmd = { "/home/petris/.asdf/shims/cucumber-language-server", "--stdio" },
   filetypes = { "cucumber", "feature" },
   root_dir = require("lspconfig").util.find_git_ancestor,
   settings = {
@@ -142,6 +146,9 @@ lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 -- Bundler install
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
 
+-- Open terminal
+lvim.keys.normal_mode["<Leader>\'"] = ':ToggleTerm<CR>'
+
 -- neotest-rspec
 lvim.keys.normal_mode["<Leader>ta"] = ':lua require("neotest").run.run(vim.fn.expand("%"))<CR>'
 lvim.keys.normal_mode["<Leader>ts"] = ':lua require("neotest").run.run()<CR>'
@@ -149,6 +156,12 @@ lvim.keys.normal_mode["<Leader>tw"] = ':lua require("neotest").watch.toggle(vim.
 lvim.keys.normal_mode["<Leader>to"] = ':lua require("neotest").summary.toggle()<CR>'
 lvim.keys.normal_mode["<Leader>tj"] = ':lua require("neotest").jump.next({ status = "failed" })<CR>'
 lvim.keys.normal_mode["<Leader>tp"] = ':lua require("neotest").prev.next({ status = "failed" })<CR>'
+
+-- zenmode
+lvim.keys.normal_mode["<Leader>z"] = ':ZenMode<CR>'
+
+-- jump to definition
+lvim.keys.normal_mode["<Leader>jd"] = ":lua vim.lsp.buf.definition()<CR>"
 
 -- Split hotkeys
 lvim.keys.normal_mode["<Leader>0"] = "<C-W>v"
