@@ -72,6 +72,7 @@ lvim.plugins = {
   },
   { "thoughtbot/vim-rspec" },
   { "tpope/vim-rails" },
+  -- Do not forget to install ripgrep in order to speed up file search
   { 
     "nvim-telescope/telescope.nvim",
     config = function()
