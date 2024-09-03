@@ -31,20 +31,6 @@ lvim.plugins = {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      -- require("mason").setup()
-      -- require("mason-lspconfig").setup({
-      --   ensure_installed = { 'cucumber_language_server' }
-      -- })
-      -- require('lspconfig').cucumber_language_server.setup {
-      --   filetypes = { "cucumber", "feature" },
-      --   root_dir = require("lspconfig").util.find_git_ancestor,
-      --   settings = {
-      --     cucumber = {
-      --       glue = { "features/step_definitions/*.rb" },
-      --       features = { "features/*.feature" }
-      --     }
-      --   }
-      -- }
     end
   },
   {
@@ -91,7 +77,10 @@ lvim.plugins = {
   {
     "nvim-treesitter/nvim-treesitter",
     config = function()
-      ensure_installed = { "ruby", "clojure", "javascript", "typescript" }
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "elixir", "eex", "heex", "ruby", "clojure", "javascript", "typescript" },
+        highlight = { enable = true }
+      })
     end
   },
   { "thoughtbot/vim-rspec" },
@@ -102,7 +91,7 @@ lvim.plugins = {
     config = function()
       require('telescope').setup({
         defaults = {
-          file_ignore_patterns = { "node_modules", "target", "out", "coverage" },
+          file_ignore_patterns = { "_build", "node_modules", "target", "out", "coverage" },
           layout_config = {
             vertical = { width = 0.5 }
           }
