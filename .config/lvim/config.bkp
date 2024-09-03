@@ -1,0 +1,175 @@
+-- Read the docs: https://www.lunarvim.org/docs/configuration
+-- Video Tutorials: https://www.youtube.com/watch?v=sFA9kX-Ud_c&list=PLhoH5vyxr6QqGu0i7tt_XoVK9v-KvZ3m6
+-- Forum: https://www.reddit.com/r/lunarvim/
+-- Discord: https://discord.com/invite/Xb9B4Ny
+
+-- lvim.colorscheme = 'nord'
+lvim.leader = 'space'
+
+require('lvim.lsp.manager').setup("tailwindcss", {
+  filetypes = { 'html', "erb", 'eruby' },
+  root_dir = function(fname)
+    return require('lspconfig').util.root_pattern ".git"(fname)
+  end
+})
+
+lvim.plugins = {
+  { "nvim-lua/plenary.nvim" },
+  {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end
+  },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "neovim/nvim-lspconfig",
+    config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup( {
+        ensure_installed = { 'cucumber_language_server' }
+      })
+      require('lspconfig').cucumber_language_server.setup {}
+    end
+  },
+  {
+    'rcarriga/nvim-notify',
+    config = function()
+      lvim.notify = require("notify")
+      lvim.notify("Hello Petris")
+    end
+  },
+  { 'folke/zen-mode.nvim' },
+  {
+    "nvim-neotest/neotest",
+    lazy = true,
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "olimorris/neotest-rspec",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter"
+    },
+    config = function()
+      require('neotest').setup({
+        adapters = {
+          require('neotest-rspec')({
+            root_files = { "Gemfile" },
+            rspec_cmd = function()
+              return vim.tbl_flatten({
+                "bundle",
+                "exec",
+                "rspec"
+              })
+            end
+          })
+        }
+      })
+    end
+  },
+  {
+   "nvim-treesitter/nvim-treesitter",
+    config = function()
+      ensure_installed = { "elixir", "eex", "heex", "ex", "ruby", "clojure", "golang", "javascript", "typescript" }
+      highlight = { enable = true }
+    end
+  },
+  { "thoughtbot/vim-rspec" },
+  { "tpope/vim-rails" },
+  -- Do not forget to install ripgrep in order to speed up file search
+  { 
+    "nvim-telescope/telescope.nvim",
+    config = function()
+      require('telescope').setup({
+        defaults = {
+          file_ignore_patterns = {"node_modules", "target", "out" },
+          layout_config = {
+            vertical = { width = 0.5 }
+          }
+        }
+      })
+    end
+  },
+  { "mfussenegger/nvim-dap" },
+  {
+    "suketa/nvim-dap-ruby",
+    config = function()
+      require('dap-ruby').setup()
+    end
+  },
+  {
+    "RRethy/nvim-treesitter-endwise",
+    config = function()
+      require('nvim-treesitter.configs').setup {
+        endwise = {
+          enable = true
+        }
+      }
+    end
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require('nvim-ts-autotag').setup({
+        opts = {
+          enable = true,
+          enable_rename = true,
+          enable_close = true,
+        },
+        filetypes = { "html", "htmldjango", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
+      })
+    end
+  },
+  {
+    "Pocco81/auto-save.nvim",
+    config = function()
+      require('auto-save').setup()
+    end
+  },
+  { "elixir-lang/tree-sitter-elixir"},
+
+-- CLOJURE
+  -- { "Olical/conjure" },
+  -- { "guns/vim-sexp" },
+  -- { "tpope/vim-repeat" },
+  -- { "tpope/vim-surround" },
+  -- { "shaunsingh/nord.nvim"}
+}
+
+require('lvim.lsp.manager').setup("cucumber_language_server", {
+  cmd = { "/home/petris/.asdf/shims/cucumber-language-server", "--stdio" },
+  filetypes = { "cucumber", "feature" },
+  root_dir = require("lspconfig").util.find_git_ancestor,
+  settings = {
+    cucumber = {
+      glue = { "features/step_definitions/*.rb" },
+      features = { "features/*.feature" }
+    }
+  }
+})
+
+-- Open this configfile 
+lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
+
+-- Bundler install
+lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
+
+-- Open terminal
+lvim.keys.normal_mode["<Leader>\'"] = ':ToggleTerm<CR>'
+
+-- neotest-rspec
+lvim.keys.normal_mode["<Leader>ta"] = ':lua require("neotest").run.run(vim.fn.expand("%"))<CR>'
+lvim.keys.normal_mode["<Leader>ts"] = ':lua require("neotest").run.run()<CR>'
+lvim.keys.normal_mode["<Leader>tw"] = ':lua require("neotest").watch.toggle(vim.fn.expand("%"))<CR>'
+lvim.keys.normal_mode["<Leader>to"] = ':lua require("neotest").summary.toggle()<CR>'
+lvim.keys.normal_mode["<Leader>tj"] = ':lua require("neotest").jump.next({ status = "failed" })<CR>'
+lvim.keys.normal_mode["<Leader>tp"] = ':lua require("neotest").prev.next({ status = "failed" })<CR>'
+
+-- zenmode
+lvim.keys.normal_mode["<Leader>z"] = ':ZenMode<CR>'
+
+-- jump to definition
+lvim.keys.normal_mode["<Leader>jd"] = ":lua vim.lsp.buf.definition()<CR>"
+
+-- Split hotkeys
+lvim.keys.normal_mode["<Leader>0"] = "<C-W>v"
+lvim.keys.normal_mode["<Leader>-"] = "<C-W>s"
