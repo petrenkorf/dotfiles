@@ -177,6 +177,7 @@ lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 -- Bundler install
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
 lvim.keys.normal_mode["<Leader>rf"] = ":!rubocop -A %<CR>"
+lvim.keys.normal_mode["<Leader>rp"] = "Obinding.pry<Escape>"
 
 -- Open terminal
 lvim.keys.normal_mode["<Leader>\'"] = ':ToggleTerm<CR>'
