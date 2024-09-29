@@ -2,7 +2,8 @@
 lvim.leader = 'space'
 -- lvim.transparent_window = true
 lvim.builtin.bufferline.active = false
-lvim.lsp.installer.setup.automatic_installation = true
+-- lvim.lsp.installer.setup.automatic_installation = true
+lvim.lsp.installer.setup.automatic_servers_installation = true
 lvim.format_on_save.enabled = true
 
 require('lvim.lsp.manager').setup("tailwindcss", {
