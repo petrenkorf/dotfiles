@@ -1,19 +1,33 @@
--- lvim.colorscheme = 'nord'
-lvim.leader = 'space'
--- lvim.transparent_window = true
+lvim.colorscheme = 'catppuccin'
+-- lvim.leader = 'space'
+lvim.transparent_window = true
 lvim.builtin.bufferline.active = false
--- lvim.lsp.installer.setup.automatic_installation = true
-lvim.lsp.installer.setup.automatic_servers_installation = true
+lvim.lsp.installer.setup.automatic_installation = true
+-- lvim.lsp.installer.setup.automatic_servers_installation = true
 lvim.format_on_save.enabled = true
 
-require('lvim.lsp.manager').setup("tailwindcss", {
-  filetypes = { 'html', "erb", 'eruby' },
-  root_dir = function(fname)
-    return require('lspconfig').util.root_pattern ".git" (fname)
-  end
-})
+-- require('lvim.lsp.manager').setup("tailwindcss", {
+--   filetypes = { 'html', "erb", 'eruby' },
+--   root_dir = function(fname)
+--     return require('lspconfig').util.root_pattern ".git" (fname)
+--   end
+-- })
 
 lvim.plugins = {
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme "catppuccin"
+    end
+  },
   {
     "f-person/git-blame.nvim",
     config = function()
@@ -92,7 +106,7 @@ lvim.plugins = {
     config = function()
       require('telescope').setup({
         defaults = {
-          file_ignore_patterns = { "_build", "node_modules", "target", "out", "coverage" },
+          file_ignore_patterns = { "_build", "node_modules", "target", "out", "coverage", "vendor" },
           layout_config = {
             vertical = { width = 0.5 }
           }
@@ -118,6 +132,12 @@ lvim.plugins = {
     end
   },
   {
+    'nvim-telescope/telescope-project.nvim',
+    dependencies = {
+      'nvim-telescope/telescope.nvim'
+    }
+  },
+  {
     "windwp/nvim-ts-autotag",
     config = function()
       require('nvim-ts-autotag').setup({
@@ -125,7 +145,8 @@ lvim.plugins = {
           enable = true,
           enable_rename = true,
           enable_close = true,
-          filetypes = { "html", "htmldjango", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
+          enable_close_on_slash = true,
+          filetypes = { "html", "xml", "eruby", "javascript", "typescript", "typescriptreact", "javascriptreact" }
         }
       })
     end
@@ -178,6 +199,7 @@ lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 -- Bundler install
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
 lvim.keys.normal_mode["<Leader>rf"] = ":!rubocop -A %<CR>"
+lvim.keys.normal_mode["<Leader>re"] = ":e config/routes.rb<CR>"
 lvim.keys.normal_mode["<Leader>rp"] = "Obinding.pry<Escape>"
 
 -- Open terminal
@@ -210,3 +232,5 @@ lvim.keys.normal_mode["<tab>"] = ":A<CR>"
 
 -- Live grep the current selection
 lvim.keys.visual_mode["<Leader>st"] = "\"sy:exe \":Telescope live_grep default_text=\".getreg('s')<CR>"
+
+lvim.keys.normal_mode["<Leader>tf"] = ":lua vim.lsp.buf.hover()<CR>"
