@@ -1,10 +1,11 @@
-lvim.colorscheme = 'catppuccin'
+lvim.colorscheme = 'tokyonight-storm'
 -- lvim.leader = 'space'
 lvim.transparent_window = true
 lvim.builtin.bufferline.active = false
-lvim.lsp.installer.setup.automatic_installation = true
+-- lvim.lsp.installer.setup.automatic_installation = true
 -- lvim.lsp.installer.setup.automatic_servers_installation = true
 lvim.format_on_save.enabled = true
+vim.g.maplocalleader = ","
 
 -- require('lvim.lsp.manager').setup("tailwindcss", {
 --   filetypes = { 'html', "erb", 'eruby' },
@@ -48,13 +49,13 @@ lvim.plugins = {
     config = function()
     end
   },
-  {
-    "rcarriga/nvim-notify",
-    config = function()
-      lvim.notify = require("notify")
-      vim.notify = require("notify")
-    end
-  },
+  -- {
+  --   "rcarriga/nvim-notify",
+  --   config = function()
+  --     lvim.notify = require("notify")
+  --     vim.notify = require("notify")
+  --   end
+  -- },
   {
     "folke/noice.nvim",
     dependencies = {
@@ -106,7 +107,7 @@ lvim.plugins = {
     config = function()
       require('telescope').setup({
         defaults = {
-          file_ignore_patterns = { "_build", "node_modules", "target", "out", "coverage", "vendor" },
+          file_ignore_patterns = { "_build", "node_modules", "target", "coverage", "vendor", "resources/public/js" },
           layout_config = {
             vertical = { width = 0.5 }
           }
@@ -157,9 +158,30 @@ lvim.plugins = {
       require('auto-save').setup()
     end
   },
+  {
+    "kristijanhusak/vim-dadbod-ui",
+    dependencies = {
+      { "tpope/vim-dadbod",                     lazy = true },
+      { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" }, lazy = true }, -- Optional
+    },
+    cmd = {
+      "DBUI",
+      "DBUIToggle",
+      "DBUIAddConnection",
+      "DBUIFindBuffer",
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+    end
+  },
 
   -- CLOJURE
-  { "Olical/conjure" },
+  -- {
+  --   "Olical/conjure",
+  --   -- version = "v4.20.0"
+  -- },
+  { "tpope/vim-fireplace" },
   { "guns/vim-sexp" },
   { "tpope/vim-repeat" },
   { "tpope/vim-surround" },
@@ -193,13 +215,16 @@ local function notify_output(command, opts)
   })
 end
 
+lvim.keys.normal_mode["<leader>re"] = "<Plug>FireplaceEval"
+lvim.keys.normal_mode["<leader>rf"] = "<Plug>FireplaceLoadFile"
+
 -- Open this configfile
 lvim.keys.normal_mode["<Leader>lc"] = ":e ~/.config/lvim/config.lua<CR>"
 
 -- Bundler install
 lvim.keys.normal_mode["<Leader>i"] = ":!bundle install<CR>"
-lvim.keys.normal_mode["<Leader>rf"] = ":!rubocop -A %<CR>"
-lvim.keys.normal_mode["<Leader>re"] = ":e config/routes.rb<CR>"
+-- lvim.keys.normal_mode["<Leader>rf"] = ":!rubocop -A %<CR>"
+-- lvim.keys.normal_mode["<Leader>re"] = ":e config/routes.rb<CR>"
 lvim.keys.normal_mode["<Leader>rp"] = "Obinding.pry<Escape>"
 
 -- Open terminal
