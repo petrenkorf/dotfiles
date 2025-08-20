@@ -2,6 +2,7 @@ vim.cmd("set expandtab")
 vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
+vim.opt.wrap = false
 -- vim.cmd("set autoindent")
 -- vim.cmd("set smartindent")
 -- vim.cmd("filetype plugin indent on")
@@ -46,7 +47,21 @@ local plugins = {
   {
     "nvim-telescope/telescope.nvim",
     name = "telescope",
-    dependencies = { "nvim-lua/plenary.nvim" }
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope-ui-select.nvim"
+    },
+    config = function()
+      require("telescope").setup({
+        extensions = {
+          ["ui-select"] = {
+            require("telescope.themes").get_dropdown({})
+          }
+        }
+      })
+
+      require("telescope").load_extension("ui-select")
+    end
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
@@ -264,6 +279,11 @@ vim.keymap.set("n", "<leader>jd", vim.lsp.buf.definition, {})
 vim.keymap.set("n", "<leader>jr", vim.lsp.buf.references, {})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
+
+-- vim.keymap.set("n", "<leader>ca", function()
+--   require("telescope.builtin").code_actions()
+-- end, { desc = "LSP Code Actions" })
+
 
 -- Neovim Config
 vim.keymap.set('n', '<leader>oc', ':e $MYVIMRC<CR>')
