@@ -57,6 +57,9 @@ local plugins = {
           ["ui-select"] = {
             require("telescope.themes").get_dropdown({})
           }
+        },
+        defaults = {
+          file_ignore_patterns = { "resources/" }
         }
       })
 
