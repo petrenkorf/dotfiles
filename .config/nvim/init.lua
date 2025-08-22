@@ -253,6 +253,13 @@ local plugins = {
       })
     end,
   },
+  {
+    "christoomey/vim-tmux-navigator",
+    vim.keymap.set("n", "C-h", ":TmuxNavigateLeft<CR>"),
+    vim.keymap.set("n", "C-j", ":TmuxNavigateDown<CR>"),
+    vim.keymap.set("n", "C-k", ":TmuxNavigateUp<CR>"),
+    vim.keymap.set("n", "C-l", ":TmuxNavigateRight<CR>"),
+  },
   -- Clojure
   {
     "Olical/conjure",
@@ -275,6 +282,10 @@ vim.keymap.set('n', '<leader>q', ':q!<CR>')
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>0', ':vsplit<CR>')
 vim.keymap.set('n', '<leader>-', ':split<CR>')
+-- vim.keymap.set('n', '<c-k>', ':wincmd k<CR>')
+-- vim.keymap.set('n', '<c-j>', ':wincmd j<CR>')
+-- vim.keymap.set('n', '<c-h>', ':wincmd h<CR>')
+-- vim.keymap.set('n', '<c-l>', ':wincmd l<CR>')
 
 -- LSP
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
@@ -282,6 +293,7 @@ vim.keymap.set("n", "<leader>jd", vim.lsp.buf.definition, {})
 vim.keymap.set("n", "<leader>jr", vim.lsp.buf.references, {})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
+
 
 -- vim.keymap.set("n", "<leader>ca", function()
 --   require("telescope.builtin").code_actions()
