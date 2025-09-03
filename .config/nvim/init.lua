@@ -30,7 +30,9 @@ local plugins = {
   {
     "windwp/nvim-autopairs",
     config = function()
-      require("nvim-autopairs").setup {}
+      require("nvim-autopairs").setup({
+        enable_check_bracket_line = false
+      })
     end
   },
   {
