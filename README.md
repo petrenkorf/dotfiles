@@ -2,3 +2,4 @@
 [ ] Polybar
 [ ] I3
 [X] Picom
+[X] Rofi
