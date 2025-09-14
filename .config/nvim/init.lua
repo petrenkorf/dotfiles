@@ -36,6 +36,14 @@ local plugins = {
     end
   },
   {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup()
+    end
+  },
+  { "EdenEast/nightfox.nvim" },
+  {
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
@@ -268,26 +276,40 @@ local plugins = {
     ft = { "clojure" }
   },
   -- Ruby
-  {
-    "vim-ruby/vim-ruby"
-  },
-  {
-    "tpope/vim-endwise"
-  }
+  { "vim-ruby/vim-ruby" },
+  { "tpope/vim-endwise" }
 
 }
 
 require("lazy").setup(plugins, opts)
+
+-- Switch between clojure source and tests
+local function switch_source_test()
+  local path = vim.fn.expand("%:p") -- full path of current file
+  local target_path
+
+  if path:match("_test%.clj$") then
+    -- Current file is a test, go to source
+    target_path = path
+        :gsub("test/", "src/")       -- replace test/ with src/
+        :gsub("_test%.clj$", ".clj") -- remove _test
+  else
+    -- Current file is source, go to test
+    target_path = path
+        :gsub("src/", "test/")       -- replace src/ with test/
+        :gsub("%.clj$", "_test.clj") -- add _test
+  end
+
+  -- Open the target file
+  vim.cmd("edit! " .. target_path)
+end
+vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
 
 -- Custom
 vim.keymap.set('n', '<leader>q', ':q!<CR>')
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>0', ':vsplit<CR>')
 vim.keymap.set('n', '<leader>-', ':split<CR>')
--- vim.keymap.set('n', '<c-k>', ':wincmd k<CR>')
--- vim.keymap.set('n', '<c-j>', ':wincmd j<CR>')
--- vim.keymap.set('n', '<c-h>', ':wincmd h<CR>')
--- vim.keymap.set('n', '<c-l>', ':wincmd l<CR>')
 
 -- LSP
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
@@ -295,11 +317,6 @@ vim.keymap.set("n", "<leader>jd", vim.lsp.buf.definition, {})
 vim.keymap.set("n", "<leader>jr", vim.lsp.buf.references, {})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
-
-
--- vim.keymap.set("n", "<leader>ca", function()
---   require("telescope.builtin").code_actions()
--- end, { desc = "LSP Code Actions" })
 
 
 -- Neovim Config
