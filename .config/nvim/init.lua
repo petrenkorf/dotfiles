@@ -36,24 +36,35 @@ local plugins = {
     end
   },
   {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require("nvim-ts-autotag").setup({})
+    end
+  },
+  {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("lualine").setup()
     end
   },
-  { "EdenEast/nightfox.nvim" },
   {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
+    "EdenEast/nightfox.nvim",
     config = function()
-      require('tokyonight').setup({
-        transparent = true
-      })
-      vim.cmd.colorscheme "tokyonight-storm"
+      vim.cmd.colorscheme "carbonfox"
     end
   },
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('tokyonight').setup({
+  --       transparent = true
+  --     })
+  --     vim.cmd.colorscheme "tokyonight-storm"
+  --   end
+  -- },
   {
     "nvim-telescope/telescope.nvim",
     name = "telescope",
@@ -140,6 +151,10 @@ local plugins = {
       lspconfig.ruby_lsp.setup({
         capabilities = capabilities
       })
+      lspconfig.emmet_language_server.setup({
+        capabilities = capabilities,
+        filetypes = { "typscriptreact", "typescript" }
+      })
     end,
   },
   {
@@ -170,6 +185,7 @@ local plugins = {
         sources = {
           null_ls.builtins.diagnostics.rubocop,
           null_ls.builtins.formatting.rufo,
+          null_ls.builtins.formatting.prettier,
           null_ls.builtins.diagnostics.clj_kondo,
           null_ls.builtins.formatting.cljfmt,
         }
@@ -188,7 +204,7 @@ local plugins = {
       })
 
       vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = { "*.rb", "*.clj", "*.lua" },
+        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts" },
         callback = function()
           vim.lsp.buf.format({ async = false })
         end,
@@ -273,7 +289,15 @@ local plugins = {
   -- Clojure
   {
     "Olical/conjure",
-    ft = { "clojure" }
+    ft = { "clojure" },
+    config = function()
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = "*.clj", -- or "*.cljs", "*.cljc"
+        callback = function()
+          vim.cmd("ConjureEvalBuf")
+        end
+      })
+    end
   },
   -- Ruby
   { "vim-ruby/vim-ruby" },
@@ -285,22 +309,19 @@ require("lazy").setup(plugins, opts)
 
 -- Switch between clojure source and tests
 local function switch_source_test()
-  local path = vim.fn.expand("%:p") -- full path of current file
+  local path = vim.fn.expand("%:p")
   local target_path
 
   if path:match("_test%.clj$") then
-    -- Current file is a test, go to source
     target_path = path
         :gsub("test/", "src/")       -- replace test/ with src/
         :gsub("_test%.clj$", ".clj") -- remove _test
   else
-    -- Current file is source, go to test
     target_path = path
         :gsub("src/", "test/")       -- replace src/ with test/
         :gsub("%.clj$", "_test.clj") -- add _test
   end
 
-  -- Open the target file
   vim.cmd("edit! " .. target_path)
 end
 vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
