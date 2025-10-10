@@ -3,6 +3,7 @@ vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
 vim.opt.wrap = false
+vim.cmd("set number")
 -- vim.cmd("set autoindent")
 -- vim.cmd("set smartindent")
 -- vim.cmd("filetype plugin indent on")
@@ -33,12 +34,6 @@ local plugins = {
       require("nvim-autopairs").setup({
         enable_check_bracket_line = false
       })
-    end
-  },
-  {
-    "windwp/nvim-ts-autotag",
-    config = function()
-      require("nvim-ts-autotag").setup({})
     end
   },
   {
@@ -80,7 +75,7 @@ local plugins = {
           }
         },
         defaults = {
-          file_ignore_patterns = { "resources/" }
+          file_ignore_patterns = { "resources/", "node_modules/" }
         }
       })
 
@@ -111,8 +106,21 @@ local plugins = {
         },
         indent = {
           enable = true
+        },
+        autotag = {
+          enabled = true
         }
       }
+    end
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("nvim-ts-autotag").setup({
+        enabled = true,
+        filetypes = { "html", "javascript", "typescript", "javascriptreact", "typescriptreact" }
+      })
     end
   },
   {
