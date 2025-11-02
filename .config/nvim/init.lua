@@ -232,17 +232,22 @@ local plugins = {
       local float_term2 = Terminal2:new({ direction = "float" })
       local float_term3 = Terminal3:new({ direction = "float" })
 
-      vim.keymap.set({ "n", "t" }, "<A-1>", function()
+      local open_term1 = function()
         float_term1:toggle()
-      end, { desc = "Toggle Floating Terminal" })
-
-      vim.keymap.set({ "n", "t" }, "<A-2>", function()
+      end
+      local open_term2 = function()
         float_term2:toggle()
-      end, { desc = "Toggle Floating Terminal" })
-
-      vim.keymap.set({ "n", "t" }, "<A-3>", function()
+      end
+      local open_term3 = function()
         float_term3:toggle()
-      end, { desc = "Toggle Floating Terminal" })
+      end
+
+      vim.keymap.set({ "n", "t" }, "<A-1>", open_term1, { desc = "Toggle Floating Terminal" })
+      vim.keymap.set({ "n", "t" }, "!", open_term1, { desc = "Toggle Floating Terminal" })
+      vim.keymap.set({ "n", "t" }, "<A-2>", open_term2, { desc = "Toggle Floating Terminal" })
+      vim.keymap.set({ "n", "t" }, "@", open_term2, { desc = "Toggle Floating Terminal" })
+      vim.keymap.set({ "n", "t" }, "<A-3>", open_term3, { desc = "Toggle Floating Terminal" })
+      vim.keymap.set({ "n", "t" }, "#", open_term3, { desc = "Toggle Floating Terminal" })
     end
   },
   {
