@@ -100,7 +100,7 @@ local plugins = {
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup {
-        ensure_installed = { "ruby", "clojure", "javascript", "typescript", "lua" },
+        ensure_installed = { "ruby", "clojure", "javascript", "typescript", "lua", "c", "cpp" },
         highlight = {
           enable = true
         },
@@ -150,6 +150,26 @@ local plugins = {
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+      lspconfig.terraformls.setup({
+        on_attach = function(client, bufnr)
+          -- optional, but nice to have:
+          vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+        end,
+        capabilities = capabilities,
+        filetypes = { "terraform", "tf", "hcl" },
+        cmd = { vim.fn.stdpath("data") .. "/mason/bin/terraform-ls", "serve" },
+        root_dir = require('lspconfig.util').root_pattern(".terraform", ".terraform.lock.hcl", ".git"),
+        settings = {
+          terraform = {
+            languageServer = {
+              experimentalFeatures = {
+                validateOnSave = true,
+                schema = true,
+              },
+            },
+          },
+        },
+      })
       lspconfig.lua_ls.setup({
         capabilities = capabilities
       })
@@ -162,6 +182,10 @@ local plugins = {
       lspconfig.emmet_language_server.setup({
         capabilities = capabilities,
         filetypes = { "typscriptreact", "typescript" }
+      })
+      lspconfig.clangd.setup({
+        filetypes = { "c", "cpp", "objc", "objcpp" },
+        root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git")
       })
     end,
   },
@@ -212,7 +236,7 @@ local plugins = {
       })
 
       vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts" },
+        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts", "*.tf" },
         callback = function()
           vim.lsp.buf.format({ async = false })
         end,
@@ -257,6 +281,13 @@ local plugins = {
   },
   {
     "hrsh7th/nvim-cmp",
+    dependencies = {
+      "L3MON4D3/LuaSnip", -- you already have this
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
     config = function()
       local cmp = require("cmp")
       require("luasnip.loaders.from_vscode").lazy_load()
@@ -272,6 +303,8 @@ local plugins = {
           documentation = cmp.config.window.bordered(),
         },
         mapping = cmp.mapping.preset.insert({
+          ["<Tab>"] = cmp.mapping.select_next_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
@@ -279,10 +312,10 @@ local plugins = {
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
         }),
         sources = cmp.config.sources({
+          { name = "nvim_lsp" },
           { name = "luasnip" }, -- For luasnip users.
-          { name = "nvim_lsp" }
-        }, {
           { name = "buffer" },
+          { name = "path" },
         }),
       })
     end,
@@ -314,6 +347,10 @@ local plugins = {
 }
 
 require("lazy").setup(plugins, opts)
+
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 
 -- Switch between clojure source and tests
 local function switch_source_test()
