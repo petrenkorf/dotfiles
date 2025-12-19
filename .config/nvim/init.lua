@@ -29,6 +29,30 @@ local opts = {}
 
 local plugins = {
   {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "olimorris/neotest-rspec" },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-rspec")
+        }
+      })
+
+      vim.keymap.set("n", "<leader>tn", function() require("neotest").run.run() end)
+      vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end)
+      vim.keymap.set("n", "<leader>ts", function() require("neotest").summary.toggle() end)
+      vim.keymap.set("n", "<leader>to", function() require("neotest").output.open({ enter = true }) end)
+    end
+  },
+  {
+    "folke/zen-mode.nvim"
+  },
+  {
     "windwp/nvim-autopairs",
     config = function()
       require("nvim-autopairs").setup({
@@ -89,23 +113,25 @@ local plugins = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim"
-    },
-    config = function()
-      vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "none" })
-      vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "none" })
-    end
+    } --,
+    -- config = function()
+    --   vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "none" })
+    --   vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "none" })
+    -- end
   },
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup {
-        ensure_installed = { "ruby", "clojure", "javascript", "typescript", "lua", "c", "cpp" },
+        ensure_installed = { "ruby", "clojure", "javascript", "typescript", "lua", "c", "cpp", "java" },
         highlight = {
-          enable = true
+          enable = true,
+          additional_vim_regex_highlighting = { "ruby" }
         },
         indent = {
-          enable = true
+          enable = true,
+          -- disable = { "ruby" }
         },
         autotag = {
           enabled = true
@@ -187,6 +213,15 @@ local plugins = {
         filetypes = { "c", "cpp", "objc", "objcpp" },
         root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git")
       })
+      lspconfig.jdtls.setup({
+        cmd = "jdtls",
+        settings = {
+          java = {
+            signatureHelp = { enabled = true },
+            completion = { favoriteStaticMembers = { "org.junit.Assert.*", "java.util.Objects.*" } }
+          }
+        }
+      })
     end,
   },
   {
@@ -215,8 +250,8 @@ local plugins = {
       local null_ls = require("null-ls")
       null_ls.setup({
         sources = {
-          null_ls.builtins.diagnostics.rubocop,
-          null_ls.builtins.formatting.rufo,
+          -- null_ls.builtins.diagnostics.rubocop,
+          -- null_ls.builtins.formatting.rufo,
           null_ls.builtins.formatting.prettier,
           null_ls.builtins.diagnostics.clj_kondo,
           null_ls.builtins.formatting.cljfmt,
@@ -309,7 +344,7 @@ local plugins = {
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          -- ["<CR>"] = cmp.mapping.confirm({ select = true }),
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
@@ -326,6 +361,19 @@ local plugins = {
     vim.keymap.set("n", "C-j", ":TmuxNavigateDown<CR>"),
     vim.keymap.set("n", "C-k", ":TmuxNavigateUp<CR>"),
     vim.keymap.set("n", "C-l", ":TmuxNavigateRight<CR>"),
+  },
+  -- SQL
+  {
+    "tpope/vim-dadbod",
+  },
+  {
+    "kristijanhusak/vim-dadbod-ui",
+    dependencies = { "tpope/vim-dadbod", "kristijanhusak/vim-dadbod-completion" }
+  },
+  {
+    "kristijanhusak/vim-dadbod-completion",
+    ft = { "sql", "mysql", "plsql" },
+    dependencies = { "tpope/vim-dadbod" }
   },
   -- Clojure
   {
@@ -348,9 +396,10 @@ local plugins = {
 
 require("lazy").setup(plugins, opts)
 
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+-- BackgroundTransparency
+-- vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+-- vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
+-- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 
 -- Switch between clojure source and tests
 local function switch_source_test()
@@ -371,6 +420,9 @@ local function switch_source_test()
 end
 vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
 
+-- C build
+vim.keymap.set('n', '<leader>b', ':!make clean && make<CR>')
+
 -- Custom
 vim.keymap.set('n', '<leader>q', ':q!<CR>')
 vim.keymap.set('n', '<leader>w', ':w<CR>')
@@ -384,6 +436,8 @@ vim.keymap.set("n", "<leader>jr", vim.lsp.buf.references, {})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
 
+-- Run Ruby file
+vim.keymap.set('n', '<leader>rf', ':!ruby %<CR>', {})
 
 -- Neovim Config
 vim.keymap.set('n', '<leader>oc', ':e $MYVIMRC<CR>')
