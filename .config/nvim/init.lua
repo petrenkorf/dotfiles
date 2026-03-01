@@ -1,14 +1,4 @@
-vim.cmd("set expandtab")
-vim.cmd("set tabstop=2")
-vim.cmd("set softtabstop=2")
-vim.cmd("set shiftwidth=2")
-vim.cmd("set number")
-vim.opt.wrap = false
--- vim.cmd("set autoindent")
--- vim.cmd("set smartindent")
--- vim.cmd("filetype plugin indent on")
-
-vim.g.mapleader = " "
+require("options")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -43,7 +33,29 @@ local plugins = {
         }
       })
 
-      vim.keymap.set("n", "<leader>tn", function() require("neotest").run.run() end)
+      local Terminal = require('toggleterm.terminal').Terminal
+
+      local rspec_term = Terminal:new({
+        direction = "float",
+        hidden = true
+      })
+
+      function RunRSpecCurrentLine()
+        local file = vim.fn.expand("%")
+        local line = vim.fn.line(".")
+
+        if file == "" then
+          print("No file detected")
+          return
+        end
+
+        local cmd = string.format("bundle exec rspec %s:%d", file, line)
+
+        rspec_term:toggle()
+        rspec_term:send(cmd)
+      end
+
+      vim.keymap.set("n", "<leader>tt", function() RunRSpecCurrentLine() end)
       vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end)
       vim.keymap.set("n", "<leader>ts", function() require("neotest").summary.toggle() end)
       vim.keymap.set("n", "<leader>to", function() require("neotest").output.open({ enter = true }) end)
@@ -196,6 +208,9 @@ local plugins = {
           },
         },
       })
+      lspconfig.elixirls.setup({
+        capabilities = capabilities
+      })
       lspconfig.lua_ls.setup({
         capabilities = capabilities
       })
@@ -252,11 +267,14 @@ local plugins = {
         sources = {
           -- null_ls.builtins.diagnostics.rubocop,
           -- null_ls.builtins.formatting.rufo,
-          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.formatting.prettier.with({
+            filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "jsx", "tsx" }
+          }),
           null_ls.builtins.diagnostics.clj_kondo,
           null_ls.builtins.formatting.cljfmt,
         }
       })
+
 
       vim.keymap.set("n", "<leader>nf", vim.lsp.buf.format, {})
 
@@ -271,7 +289,7 @@ local plugins = {
       })
 
       vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts", "*.tf" },
+        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts", "*.jsx", "*.tf" },
         callback = function()
           vim.lsp.buf.format({ async = false })
         end,
