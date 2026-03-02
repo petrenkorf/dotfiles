@@ -1,12 +1,24 @@
 # Copyright (c) 2016-present Sven Greb <development@svengreb.de>
 # This source code is licensed under the MIT license found in the license file.
 
+keyboard:
+  alt_send_esc: true
 window:
   opacity: 0.6
   # decorations: none
   padding:
     x: 20
     y: 20
+
+font:
+  normal:
+    family: "JetBrainsMono Nerd Font"
+    style: Regular
+  bold:
+    family: "JetBrainsMono Nerd Font"
+  italic:
+    family: "JetBrainsMono Nerd Font"
+  size: 17
 
 colors:
   primary:

@@ -46,6 +46,12 @@ local plugins = {
   {
     "EdenEast/nightfox.nvim",
     config = function()
+      require("nightfox").setup({
+        options = {
+          transparent = true
+        }
+      })
+
       vim.cmd.colorscheme "carbonfox"
     end
   },
@@ -100,7 +106,7 @@ local plugins = {
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup {
-        ensure_installed = { "ruby", "clojure", "javascript", "typescript", "lua" },
+        ensure_installed = { "html", "ruby", "embedded_template", "clojure", "javascript", "typescript", "lua" },
         highlight = {
           enable = true
         },
@@ -119,7 +125,7 @@ local plugins = {
     config = function()
       require("nvim-ts-autotag").setup({
         enabled = true,
-        filetypes = { "html", "javascript", "typescript", "javascriptreact", "typescriptreact" }
+        filetypes = { "eruby", "html", "javascript", "typescript", "javascriptreact", "typescriptreact" }
       })
     end
   },
@@ -146,23 +152,26 @@ local plugins = {
     "neovim/nvim-lspconfig",
     lazy = false,
     config = function()
-      local lspconfig = require("lspconfig")
+      -- local lspconfig = require("lspconfig")
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      lspconfig.lua_ls.setup({
+      vim.lsp.config("lua_ls", {
+        -- lspconfig.lua_ls.setup({
         capabilities = capabilities
       })
-      lspconfig.clojure_lsp.setup({
+      vim.lsp.config("clojure_lsp", {
+        -- lspconfig.clojure_lsp.setup({
         capabilities = capabilities
       })
-      lspconfig.ruby_lsp.setup({
+      vim.lsp.config("ruby_lsp", {
+        -- lspconfig.ruby_lsp.setup({
         capabilities = capabilities
       })
-      lspconfig.emmet_language_server.setup({
-        capabilities = capabilities,
-        filetypes = { "typscriptreact", "typescript" }
-      })
+      -- lspconfig.emmet_language_server.setup({
+      --   capabilities = capabilities,
+      --   filetypes = { "typscriptreact", "typescript", "ruby" }
+      -- })
     end,
   },
   {
@@ -191,8 +200,8 @@ local plugins = {
       local null_ls = require("null-ls")
       null_ls.setup({
         sources = {
-          null_ls.builtins.diagnostics.rubocop,
-          null_ls.builtins.formatting.rufo,
+          -- null_ls.builtins.diagnostics.rubocop,
+          -- null_ls.builtins.formatting.rufo,
           null_ls.builtins.formatting.prettier,
           null_ls.builtins.diagnostics.clj_kondo,
           null_ls.builtins.formatting.cljfmt,
@@ -212,11 +221,69 @@ local plugins = {
       })
 
       vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts" },
+        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts", "*.erb" },
         callback = function()
           vim.lsp.buf.format({ async = false })
         end,
       })
+    end
+  },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "olimorris/neotest-rspec",
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter"
+    },
+    config = function()
+      local neotest = require("neotest")
+      neotest.setup({
+        adapters = {
+          require("neotest-rspec")({
+            rspec_cmd = function()
+              return vim.tbl_flatten({
+                "bundle",
+                "exec",
+                "rspec"
+              })
+            end
+          })
+        }
+      })
+
+      local Terminal = require("toggleterm.terminal").Terminal
+
+      local rspec_term = Terminal:new({
+        -- cmd = "bash",
+        direction = "float",
+        hidden = true,
+      })
+
+      function RunRSpecCurrentLine()
+        local file = vim.fn.expand("%")
+        local line = vim.fn.line(".")
+
+        if file == "" then
+          print("No file detected")
+          return
+        end
+
+        local cmd = string.format("bundle exec rspec %s:%d", file, line)
+
+        rspec_term:toggle()
+        rspec_term:send(cmd)
+      end
+
+      vim.keymap.set("n", "<leader>tt", function()
+        RunRSpecCurrentLine()
+      end)
+      -- vim.keymap.set("n", "<leader>tt", function() neotest.run.run() end, { desc = "Run nearest test" })
+      vim.keymap.set("n", "<leader>tf", function() neotest.run.run(vim.fn.expand("%")) end, { desc = "Run current file" })
+      vim.keymap.set("n", "<leader>ts", function() neotest.summary.toggle() end, { desc = "Toggle test summary" })
+      vim.keymap.set("n", "<leader>to", function() neotest.output.open({ enter = true }) end,
+        { desc = "Show test output" })
     end
   },
   {
@@ -262,6 +329,13 @@ local plugins = {
   },
   {
     "hrsh7th/nvim-cmp",
+    dependencies = {
+      "L3MON4D3/LuaSnip",
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path"
+    },
     config = function()
       local cmp = require("cmp")
       require("luasnip.loaders.from_vscode").lazy_load()
@@ -277,6 +351,8 @@ local plugins = {
           documentation = cmp.config.window.bordered(),
         },
         mapping = cmp.mapping.preset.insert({
+          ["<Tab>"] = cmp.mapping.select_next_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
@@ -285,9 +361,9 @@ local plugins = {
         }),
         sources = cmp.config.sources({
           { name = "luasnip" }, -- For luasnip users.
-          { name = "nvim_lsp" }
-        }, {
+          { name = "nvim_lsp" },
           { name = "buffer" },
+          { name = "path" }
         }),
       })
     end,
@@ -338,6 +414,9 @@ local function switch_source_test()
   vim.cmd("edit! " .. target_path)
 end
 vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
+
+-- Prevent toggleterm to close
+vim.keymap.set('t', '@', '@', { noremap = true })
 
 -- Custom
 vim.keymap.set('n', '<leader>q', ':q!<CR>')
