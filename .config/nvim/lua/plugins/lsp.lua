@@ -23,7 +23,7 @@ return {
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      lspconfig.terraformls.setup({
+      vim.lsp.config("terraformls", {
         on_attach = function(client, bufnr)
           -- optional, but nice to have:
           vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
@@ -43,27 +43,27 @@ return {
           },
         },
       })
-      lspconfig.elixirls.setup({
+      vim.lsp.config("elixirls", {
         capabilities = capabilities
       })
-      lspconfig.lua_ls.setup({
+      vim.lsp.config("lua_ls", {
         capabilities = capabilities
       })
-      lspconfig.clojure_lsp.setup({
+      vim.lsp.config("clojure_lsp", {
         capabilities = capabilities
       })
-      lspconfig.ruby_lsp.setup({
+      vim.lsp.config("ruby_lsp", {
         capabilities = capabilities
       })
-      lspconfig.emmet_language_server.setup({
+      vim.lsp.config("emmet_language_server", {
         capabilities = capabilities,
         filetypes = { "typscriptreact", "typescript" }
       })
-      lspconfig.clangd.setup({
+      vim.lsp.config("clangd", {
         filetypes = { "c", "cpp", "objc", "objcpp" },
         root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git")
       })
-      lspconfig.jdtls.setup({
+      vim.lsp.config("jdtls", {
         cmd = "jdtls",
         settings = {
           java = {
