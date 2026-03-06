@@ -8,3 +8,5 @@ vim.opt.wrap = false
 vim.cmd("set autoindent")
 vim.cmd("set smartindent")
 vim.cmd("filetype plugin indent on")
+vim.o.exrc = true
+vim.o.secure = true
