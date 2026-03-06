@@ -22,7 +22,7 @@ return {
       })
 
       function RunRSpecCurrentLine()
-        local file = vim.fn.expand("%")
+        local file = vim.fn.expand("%:p:.")
         local line = vim.fn.line(".")
 
         if file == "" then

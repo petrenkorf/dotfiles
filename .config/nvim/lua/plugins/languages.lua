@@ -15,6 +15,7 @@ return {
   -- Ruby
   { "vim-ruby/vim-ruby" },
   { "tpope/vim-endwise" },
+  { "tpope/vim-rails" },
   -- SQL
   {
     "tpope/vim-dadbod",
