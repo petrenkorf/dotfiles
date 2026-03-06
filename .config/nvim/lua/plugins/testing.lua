@@ -8,9 +8,19 @@ return {
       "nvim-treesitter/nvim-treesitter",
       "olimorris/neotest-rspec" },
     config = function()
+      local function rspec_cmd()
+        if vim.g.rspec_cmd then
+          return vim.g.rspec_cmd
+        end
+
+        return { "bundle", "exec", "rspec" }
+      end
+
       require("neotest").setup({
         adapters = {
-          require("neotest-rspec")
+          require("neotest-rspec")({
+            rspec_cmd = rspec_cmd
+          })
         }
       })
 
@@ -30,8 +40,7 @@ return {
           return
         end
 
-        local cmd = string.format("bundle exec rspec %s:%d", file, line)
-
+        local cmd = table.concat(rspec_cmd(), " ") .. " " .. file .. ":" .. line
         rspec_term:toggle()
         rspec_term:send(cmd)
       end
