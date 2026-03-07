@@ -16,7 +16,8 @@ local function switch_source_test()
   vim.cmd("edit! " .. target_path)
 end
 
-vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
+-- vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
+vim.keymap.set("n", "<Tab>", ':A<CR>')
 
 -- C build
 vim.keymap.set('n', '<leader>b', ':!make clean && make<CR>')
