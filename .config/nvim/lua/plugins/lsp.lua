@@ -1,0 +1,73 @@
+return {
+  {
+    "williamboman/mason.nvim",
+    lazy = false,
+    config = function()
+      require("mason").setup()
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    lazy = false,
+    config = function()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "lua_ls", "clojure_lsp" },
+      })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    lazy = false,
+    config = function()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+      vim.lsp.config("lua_ls", {
+        capabilities = capabilities
+      })
+      vim.lsp.config("clojure_lsp", {
+        capabilities = capabilities
+      })
+      vim.lsp.config("ruby_lsp", {
+        capabilities = capabilities
+      })
+      -- vim.lsp.config("emmet_language_server", {
+      --   capabilities = capabilities,
+      --   filetypes = { "typscriptreact", "typescript", "ruby" }
+      -- })
+    end,
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup({
+        sources = {
+          -- null_ls.builtins.diagnostics.rubocop,
+          -- null_ls.builtins.formatting.rufo,
+          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.diagnostics.clj_kondo,
+          null_ls.builtins.formatting.cljfmt,
+        }
+      })
+
+      vim.keymap.set("n", "<leader>nf", vim.lsp.buf.format, {})
+
+      vim.diagnostic.config({
+        virtual_text = {
+          prefix = "●",
+          spacing = 2,
+        },
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+      })
+
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.rb", "*.clj", "*.lua", "*.tsx", "*.ts", "*.erb" },
+        callback = function()
+          vim.lsp.buf.format({ async = false })
+        end,
+      })
+    end
+  },
+}
