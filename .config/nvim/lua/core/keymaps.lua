@@ -16,8 +16,20 @@ local function switch_source_test()
   vim.cmd("edit! " .. target_path)
 end
 
--- vim.keymap.set("n", "<Tab>", switch_source_test, { noremap = true, silent = true })
-vim.keymap.set("n", "<Tab>", ':A<CR>')
+local function smart_alternate()
+  local ft = vim.bo.filetype
+
+  if ft == "clojure" then
+    switch_source_test()
+  elseif ft == "ruby" then
+    vim.cmd("A")
+  else
+    print("No alternate file mapping for filetype: " .. ft)
+  end
+end
+
+-- vim.keymap.set("n", "<Tab>", ':A<CR>')
+vim.keymap.set("n", "<Tab>", smart_alternate)
 
 -- C build
 vim.keymap.set('n', '<leader>b', ':!make clean && make<CR>')
