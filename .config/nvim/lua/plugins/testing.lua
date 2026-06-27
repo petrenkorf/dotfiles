@@ -31,6 +31,8 @@ return {
         hidden = true
       })
 
+      local last_rspec_cmd = nil
+
       function RunRSpecCurrentLine()
         local file = vim.fn.expand("%:p:.")
         local line = vim.fn.line(".")
@@ -40,7 +42,17 @@ return {
           return
         end
 
-        local cmd = table.concat(rspec_cmd(), " ") .. " " .. file .. ":" .. line
+        local cmd
+        if file:match("_spec%.rb$") then
+          cmd = table.concat(rspec_cmd(), " ") .. " " .. file .. ":" .. line
+          last_rspec_cmd = cmd
+        elseif last_rspec_cmd then
+          cmd = last_rspec_cmd
+        else
+          print("No spec has been run yet")
+          return
+        end
+
         rspec_term:toggle()
         rspec_term:send(cmd)
       end
