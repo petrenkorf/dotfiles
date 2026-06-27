@@ -52,10 +52,10 @@ vim.keymap.set("n", "<Tab>", smart_alternate)
 vim.keymap.set('n', '<leader>b', ':!make clean && make<CR>')
 
 -- Custom
-vim.keymap.set('n', '<leader>q', ':q!<CR>')
-vim.keymap.set('n', '<leader>w', ':w<CR>')
-vim.keymap.set('n', '<leader>0', ':vsplit<CR>')
-vim.keymap.set('n', '<leader>-', ':split<CR>')
+vim.keymap.set('n', '<leader>q', '<cmd>q!<CR>')
+vim.keymap.set('n', '<leader>w', '<cmd>w<CR>')
+vim.keymap.set('n', '<leader>0', '<cmd>vsplit<CR>')
+vim.keymap.set('n', '<leader>-', '<cmd>split<CR>')
 
 -- LSP
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
