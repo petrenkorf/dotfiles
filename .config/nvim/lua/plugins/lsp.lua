@@ -109,6 +109,13 @@ return {
           vim.lsp.buf.format({ async = false })
         end,
       })
+
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.rb" },
+        callback = function()
+          vim.cmd("normal! gg=G")
+        end,
+      })
     end
   },
 }
