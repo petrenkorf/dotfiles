@@ -1,19 +1,36 @@
--- Switch between clojure source and tests
+-- Switch between source and tests
 local function switch_source_test()
   local path = vim.fn.expand("%:p")
   local target_path
 
   if path:match("_test%.clj$") then
     target_path = path
-        :gsub("test/", "src/")       -- replace test/ with src/
-        :gsub("_test%.clj$", ".clj") -- remove _test
-  else
+        :gsub("test/", "src/")
+        :gsub("_test%.clj$", ".clj")
+  elseif path:match("%.clj$") then
     target_path = path
-        :gsub("src/", "test/")       -- replace src/ with test/
-        :gsub("%.clj$", "_test.clj") -- add _test
+        :gsub("src/", "test/")
+        :gsub("%.clj$", "_test.clj")
+  elseif path:match("_spec%.rb$") then
+    target_path = path
+        :gsub("spec/", "app/", 1)
+        :gsub("_spec%.rb$", ".rb")
+    if not vim.loop.fs_stat(target_path) then
+      target_path = path
+          :gsub("spec/", "lib/", 1)
+          :gsub("_spec%.rb$", ".rb")
+    end
+  elseif path:match("%.rb$") then
+    local rel = path:gsub("^.*/app/", ""):gsub("^.*/lib/", "")
+    local spec_dir = path:match("^(.*)/app/") or path:match("^(.*)/lib/")
+    if spec_dir then
+      target_path = spec_dir .. "/spec/" .. rel:gsub("%.rb$", "_spec.rb")
+    end
   end
 
-  vim.cmd("edit! " .. target_path)
+  if target_path then
+    vim.cmd("edit! " .. target_path)
+  end
 end
 
 local function smart_alternate()
