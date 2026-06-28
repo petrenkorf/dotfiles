@@ -8,9 +8,16 @@ return {
       local Terminal1 = require("toggleterm.terminal").Terminal
       local Terminal2 = require("toggleterm.terminal").Terminal
       local Terminal3 = require("toggleterm.terminal").Terminal
-      local float_term1 = Terminal1:new({ direction = "float" })
-      local float_term2 = Terminal2:new({ direction = "float" })
-      local float_term3 = Terminal3:new({ direction = "float" })
+
+      local close_on_esc = function(term)
+        vim.keymap.set("t", "<Esc>", function()
+          term:close()
+        end, { buffer = term.bufnr, noremap = true, silent = true })
+      end
+
+      local float_term1 = Terminal1:new({ direction = "float", on_open = close_on_esc })
+      local float_term2 = Terminal2:new({ direction = "float", on_open = close_on_esc })
+      local float_term3 = Terminal3:new({ direction = "float", on_open = close_on_esc })
 
       vim.keymap.set({ "n", "t" }, "<A-1>", function()
         float_term1:toggle()
