@@ -85,4 +85,27 @@ return {
   {
     "folke/zen-mode.nvim"
   },
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("gitsigns").setup({
+        current_line_blame = true,
+        current_line_blame_opts = {
+          virt_text = true,
+          virt_text_pos = "eol",
+          delay = 300,
+        },
+      })
+
+      vim.keymap.set("n", "<leader>gb", function()
+        require("gitsigns").blame_line({
+          full = true,
+        })
+      end, { desc = "Git blame current line" })
+
+      vim.keymap.set("n", "<leader>gc", function()
+        require("gitsigns").show_commit()
+      end, { desc = "Show commit" })
+    end,
+  }
 }
